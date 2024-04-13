@@ -10,17 +10,9 @@ fi
 apt update
 apt install -y openjdk-8-jdk
 
-# Add the Jenkins Debian repository key to the system
-wget -q -O - https://pkg.jenkins.io/debian/jenkins.io.key | apt-key add -
-
-# Add the Jenkins repository to the system
-echo "deb https://pkg.jenkins.io/debian binary/" > /etc/apt/sources.list.d/jenkins.list
-
-# Update apt package index
-apt update
-
-# Install Jenkins
-apt install -y jenkins
+# Download and install Jenkins Debian package
+wget -q -O /tmp/jenkins.deb https://pkg.jenkins.io/debian-stable/binary/jenkins_2.337_all.deb
+dpkg -i /tmp/jenkins.deb
 
 # Start Jenkins service
 systemctl start jenkins
