@@ -24,11 +24,16 @@ sudo systemctl start jenkins
 # Enable Jenkins to start on boot
 sudo systemctl enable jenkins
 
-# Wait for Jenkins to fully start
-sleep 30
+# Wait for Jenkins to fully start (adjust sleep time as needed)
+sleep 60
 
 # Check Jenkins service status
 sudo systemctl status jenkins
 
-# Display initial admin password
-sudo cat /var/lib/jenkins/secrets/initialAdminPassword
+# Check if the initial admin password file exists
+if [ -f /var/lib/jenkins/secrets/initialAdminPassword ]; then
+    echo "Initial admin password:"
+    sudo cat /var/lib/jenkins/secrets/initialAdminPassword
+else
+    echo "Initial admin password file not found. Jenkins might still be initializing."
+fi
