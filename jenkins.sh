@@ -1,33 +1,34 @@
 #!/bin/bash
 
-# Check if the script is run as root
-if [ "$(id -u)" -ne 0 ]; then
-  echo "Please run this script as root"
-  exit 1
-fi
+# Update package lists
+sudo apt update
 
-# Install Java (required for Jenkins)
-apt update
-apt install -y openjdk-8-jdk
+# Install OpenJDK 11
+sudo apt install openjdk-11-jdk -y
 
-# Download and install Jenkins Debian package
-wget -q -O /tmp/jenkins.deb https://pkg.jenkins.io/debian-stable/binary/jenkins_2.337_all.deb
+# Add Jenkins repository key to the keyring
+curl -fsSL https://pkg.jenkins.io/debian-stable/jenkins.io.key | sudo gpg --dearmor -o /usr/share/keyrings/jenkins-keyring.gpg
 
-# Check if the download was successful
-if [ $? -eq 0 ]; then
-  dpkg -i /tmp/jenkins.deb
+# Add Jenkins repository to apt sources
+echo deb [signed-by=/usr/share/keyrings/jenkins-keyring.gpg] https://pkg.jenkins.io/debian-stable binary/ | sudo tee /etc/apt/sources.list.d/jenkins.list > /dev/null
 
-  # Start Jenkins service
-  systemctl start jenkins
+# Update package lists again
+sudo apt update
 
-  # Enable Jenkins to start on boot
-  systemctl enable jenkins
+# Install Jenkins
+sudo apt install jenkins -y
 
-  # Print initial admin password location and instructions
-  echo "Jenkins installation completed."
-  echo "Please retrieve your initial admin password from the following location:"
-  echo "/var/lib/jenkins/secrets/initialAdminPassword"
-  echo "Then, access Jenkins using your server's IP or domain name on port 8080."
-else
-  echo "Failed to download Jenkins Debian package. Please check your internet connection."
-fi
+# Start Jenkins service
+sudo systemctl start jenkins
+
+# Enable Jenkins to start on boot
+sudo systemctl enable jenkins
+
+# Wait for Jenkins to fully start
+sleep 30
+
+# Check Jenkins service status
+sudo systemctl status jenkins
+
+# Display initial admin password
+sudo cat /var/lib/jenkins/secrets/initialAdminPassword
